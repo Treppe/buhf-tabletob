@@ -1,42 +1,26 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jul 19 16:04:16 2022
+from ccodes import rgb_to_hex
 
-@author: egor
-"""
-import numpy as np
 
 class Card():
-    def __init__(self, color_map):
-        self.color_map = color_map
-        self.color_enum = self.build_enum(color_map)
-        self.color_codes = self.build_color_codes(color_map, self.color_enum)
+    def __init__(self, color_map, target_colors):
+        self.color_map = [rgb_to_hex(*color) for color in color_map]
+        self.color_tracks = self.build_color_tracks(color_map, target_colors)
     
-    def build_enum(self, color_map):
-        color_map_copy = list(color_map)
-        color_enum = {}
-        enum_num = 1
-        for i, _ in enumerate(color_map):
-            color = color_map_copy.pop(0)
-            color_enum[enum_num] = color
-            
-            pixel_in_list = any((color == other_c).all() 
-                                for other_c in color_map_copy)
-            if not pixel_in_list:
-                enum_num += 1
-        
-        return color_enum
-    
-    def build_color_codes(self, color_map, color_enum):
-        color_codes = {}
 
-        for num in color_enum.keys():
-            color_codes[num] = ""
-            for color in color_map:
-                if (color == color_enum[num]).all():
-                    color_codes[num] += "1"
+    def build_color_tracks(self, color_map, target_colors):
+        color_codes = {}
+        for tc_hex in target_colors:
+            color_codes[tc_hex] = ""
+        
+        for color_found in color_map:
+            color_found_hex = rgb_to_hex(*color_found)
+            
+            assert color_found_hex in target_colors
+            
+            for tc_hex in target_colors:
+                if color_found_hex == tc_hex:
+                    color_codes[tc_hex] += "1"
                 else:
-                    color_codes[num] += "0"
+                    color_codes[tc_hex] += "0"
         
         return color_codes

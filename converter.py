@@ -48,7 +48,7 @@ print(f"Reading {len(cards_pathes)} cards...")
 
 cards_list = [read_card(path, target_colors) for path in cards_pathes]
 
-tracks_vs_colors = {track : {color : 0 for color in card.color_tracks.keys()} 
+tracks_vs_colors = {track: {color: 0 for color in card.color_tracks.keys()} 
                     for card in cards_list
                     for track in card.color_tracks.values()
                     }

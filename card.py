@@ -6,7 +6,6 @@ class Card():
         self.color_map = [rgb_to_hex(*color) for color in color_map]
         self.color_tracks = self.build_color_tracks(color_map, target_colors)
     
-
     def build_color_tracks(self, color_map, target_colors):
         color_codes = {}
         for tc_hex in target_colors:

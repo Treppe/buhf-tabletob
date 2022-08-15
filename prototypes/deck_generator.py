@@ -1,6 +1,6 @@
 from itertools import combinations, product
 
-TRACK_VS_FREQ = {'0XX0': 12,
+XTRACK_VS_FREQ = {'0XX0': 12,
                 '0X0X': 8,
                 'X0X0': 8,
                 'X00X': 7,
@@ -30,44 +30,69 @@ def zip_ctracks(ctrack1, ctrack2):
     return ctrack_zipped
 
 
-ctrack_vs_freq_list = []
-for color in COLORS:
+def build_ctrack_vs_freq(color, xtrack_vs_freq):
     ctrack_vs_freq = {}
-    for x_track, freq in TRACK_VS_FREQ.items():
+    for x_track, freq in xtrack_vs_freq.items():
         color_track = x2color(x_track, color)
         ctrack_vs_freq[color_track] = freq
-    ctrack_vs_freq_list.append(ctrack_vs_freq)
+    return ctrack_vs_freq
+
+
+def pair_dict_keys(dict1, dict2):
+    keys1 = dict1.keys()
+    keys2 = dict2.keys()
     
-dicts_not_modified = [dict(a_dict) for a_dict in ctrack_vs_freq_list]
+    all_key_pairs = [(k1, k2) for k2 in keys2
+                         for k1 in keys1]
+    return all_key_pairs
+
+
+def is_exhausted(color_dict, ctrack):
+    freq = color_dict[ctrack]
+    if freq == 0:
+        print(f"Track {ctrack1} reached its limit.")
+        return True
+    return False
+
+ctrack_vs_freq_list = [build_ctrack_vs_freq(color, XTRACK_VS_FREQ) 
+                       for color in COLORS]
     
 deck = []
 zipped_list1 = []
 for dict1, dict2 in combinations(ctrack_vs_freq_list, 2):
-    ctrack_list1 = dict1.keys()
-    ctrack_list2 = dict2.keys()
+    ctrack_all_pairs = pair_dict_keys(dict1, dict2)
     
-    ctrack_all_pairs = [(ctrack1, ctrack2) for ctrack2 in ctrack_list2
-                         for ctrack1 in ctrack_list1]
     for ctrack1, ctrack2 in ctrack_all_pairs:
-        freq1, freq2 = dict1[ctrack1], dict2[ctrack2]
-        if freq1 == 0:
-            print(f"Track {ctrack1} reached its limit.")
-            break
-        if freq2 == 0:
-            print(f"Track {ctrack2} reached its limit.")
+        if is_exhausted(dict1, ctrack1) or is_exhausted(dict2, ctrack2):
             break
         
         ctrack_zipped = zip_ctracks(ctrack1, ctrack2)
-        if ctrack_zipped is None:
-            pass
-            #print(f"Tracks {ctrack1} and {ctrack2} can't be zipped.")
-        else:
-            while dict1[ctrack1] != 0 and  dict2[ctrack2] != 0: 
-                #print(ctrack_zipped)
-                dict1[ctrack1] -= 1
-                dict2[ctrack2] -= 1
-                
-                if '0' in ctrack_zipped:
-                    zipped_list1.append(ctrack_zipped)
+        if not ctrack_zipped is None:
+            dict1[ctrack1] -= 1
+            dict2[ctrack2] -= 1
+            
+            if '0' in ctrack_zipped:
+                zipped_list1.append(ctrack_zipped)
+            else:
+                deck.append(ctrack_zipped)
+  
+zipped_list2 = []
+for ctrack_z in zipped_list1:
+    for i, a_dict in enumerate(ctrack_vs_freq_list):
+        color = str(i + 1)
+        if not color in ctrack_z:
+            for ctrack_o in a_dict.keys():
+                ctrack_zipped = zip_ctracks(ctrack_z, ctrack_o)
+                if ctrack_zipped is None:
+                    zipped_list2.append(ctrack_z)
+                    pass
+                    #print(f"Tracks {ctrack1} and {ctrack2} can't be zipped.")
                 else:
-                    deck.append(ctrack_zipped)
+                    while a_dict[ctrack_o] != 0: 
+                        #print(ctrack_zipped)
+                        a_dict[ctrack_o] -= 1
+                        
+                        if '0' in ctrack_zipped:
+                            zipped_list2.append(ctrack_zipped)
+                        else:
+                            deck.append(ctrack_zipped)

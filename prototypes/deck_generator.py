@@ -50,15 +50,23 @@ def pair_dict_keys(dict1, dict2):
 def is_exhausted(color_dict, ctrack):
     freq = color_dict[ctrack]
     if freq == 0:
-        print(f"Track {ctrack1} reached its limit.")
+        #print(f"Track {ctrack1} reached its limit.")
         return True
     return False
+
+
+def are_same_color(ctrack1, ctrack2):
+    for char in ctrack1:
+        if char != '0'  and char in ctrack2:
+            return True
+    return False
+
 
 ctrack_vs_freq_list = [build_ctrack_vs_freq(color, XTRACK_VS_FREQ) 
                        for color in COLORS]
     
 deck = []
-zipped_list1 = []
+has_zeros = []
 for dict1, dict2 in combinations(ctrack_vs_freq_list, 2):
     ctrack_all_pairs = pair_dict_keys(dict1, dict2)
     
@@ -72,27 +80,62 @@ for dict1, dict2 in combinations(ctrack_vs_freq_list, 2):
             dict2[ctrack2] -= 1
             
             if '0' in ctrack_zipped:
-                zipped_list1.append(ctrack_zipped)
+                has_zeros.append(ctrack_zipped)
             else:
                 deck.append(ctrack_zipped)
+
+
+# =============================================================================
+# ctracks_original = []
+# for a_dict in ctrack_vs_freq_list:
+#     ctracks_original += [(key, a_dict) for key in a_dict.keys() 
+#                          if a_dict[key] != 0]
+# ctrack_all_pairs = list(product(has_zeros, ctracks_original))
+# 
+# can_add_4th_color = []
+# color3_added = {ctrack_z: False for ctrack_z in has_zeros}
+# for ctrack_z, ctrack_o_dict in ctrack_all_pairs:
+#     ctrack_o, a_dict = ctrack_o_dict
+#     if (not are_same_color(ctrack_z, ctrack_o) and 
+#         not is_exhausted(a_dict, ctrack_o)):
+#         ctrack_zipped = zip_ctracks(ctrack_z, ctrack_o)
+#         if not(ctrack_zipped is None):
+#             print("HI!")
+#             a_dict[ctrack_o] -= 1
+#                     
+#             color3_added[ctrack_z] = True
+#             if '0' in ctrack_zipped:
+#                 can_add_4th_color.append(ctrack_zipped)
+#             else:
+#                 deck.append(ctrack_zipped)
+# =============================================================================
+        
   
-zipped_list2 = []
-for ctrack_z in zipped_list1:
-    for i, a_dict in enumerate(ctrack_vs_freq_list):
-        color = str(i + 1)
-        if not color in ctrack_z:
-            for ctrack_o in a_dict.keys():
-                ctrack_zipped = zip_ctracks(ctrack_z, ctrack_o)
-                if ctrack_zipped is None:
-                    zipped_list2.append(ctrack_z)
-                    pass
-                    #print(f"Tracks {ctrack1} and {ctrack2} can't be zipped.")
-                else:
-                    while a_dict[ctrack_o] != 0: 
-                        #print(ctrack_zipped)
-                        a_dict[ctrack_o] -= 1
-                        
-                        if '0' in ctrack_zipped:
-                            zipped_list2.append(ctrack_zipped)
-                        else:
-                            deck.append(ctrack_zipped)
+# =============================================================================
+# cant_add_3d_color = []
+# can_add_4th_color = []
+# for ctrack_z in can_add_3d_color:
+#     built_card = False
+#     for i, a_dict in enumerate(ctrack_vs_freq_list):
+#         color = str(i + 1)
+#         if color in ctrack_z:
+#             break
+#         
+#         for ctrack_o in a_dict.keys():
+#             if ctrack_z == '0221' and ctrack_o == '3000':
+#                 print("HI")
+#             if is_exhausted(a_dict, ctrack_o):
+#                 break
+#             ctrack_zipped = zip_ctracks(ctrack_z, ctrack_o)
+#             if not(ctrack_zipped is None):
+#                 print("HI!")
+#                 built_card = True
+#                 a_dict[ctrack_o] -= 1
+#                 
+#                 if '0' in ctrack_zipped:
+#                     can_add_4th_color.append(ctrack_zipped)
+#                 else:
+#                     deck.append(ctrack_zipped)
+#     if not built_card:
+#         cant_add_3d_color.append(ctrack_z)
+# =============================================================================

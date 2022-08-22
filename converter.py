@@ -1,11 +1,22 @@
 import os
 
 import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 import openpyxl
 import pandas as pd
 
 from card import Card
 from openpyxl.styles import PatternFill
+
+XTRACK_VS_FREQ = {'0110': 12,
+                '0101': 8,
+                '1010': 8,
+                '1001': 7,
+                '0001': 3,
+                '1000': 3,
+                '0100': 1,
+                '0010': 1}
 
 
 def read_colors(colors_path):
@@ -31,7 +42,9 @@ def read_card(img_path, target_colors):
 
 
 target_colors = read_colors('colors.txt')
-cards_dirs = ['../../cards/test_03_08/']
+#cards_dirs = ['/home/egor/buhf6/balance/converter/prototypes/random_deck']
+#cards_dirs = ['../../cards/base', '../../ca
+cards_dirs = ['../../cards/test_22_08/']
 #cards_dirs = ['../../cards/base', '../../cards/rotor', '../../cards/snatch']
 
 cards_pathes = []
@@ -60,13 +73,32 @@ for card in cards_list:
             tracks_vs_colors[track][color] += 1
         except:
             tracks_vs_colors[track]
-    
+            
 result = pd.DataFrame.from_dict(tracks_vs_colors)
 result = result.T
 result = result.reindex(['0110', '0101', '1010', '1001', 
                          '0001', '1000', '0100', '0100', '0000'])
 
+
+result = result.drop("0000")
+
+good_freq_list = [freq for freq in XTRACK_VS_FREQ.values()]
+good_freq_list = [freq / sum(good_freq_list) for freq in good_freq_list]
+real_freq_list = result.sum(axis=1).to_numpy()
+real_freq_list = [freq / sum(real_freq_list) for freq in real_freq_list]
+x_axis = np.arange(len(real_freq_list))
+
+bar_width = .3
+labels = ['0110', '0101', '1010', '1001', 
+          '0001', '1000', '0100', '0100']
+plt.bar(x_axis, good_freq_list, width=bar_width, label='target')
+plt.bar(x_axis + bar_width, real_freq_list, width=bar_width, label='real')
+plt.xticks(ticks=x_axis, labels=labels)
+plt.legend()
+plt.show()
+
 result['Tracks total'] = result.sum(axis=1)
+
 result.to_excel('tracks_vs_colors.xlsx')
 
 wb = openpyxl.load_workbook("tracks_vs_colors.xlsx") #path to the Excel file

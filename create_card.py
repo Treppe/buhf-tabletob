@@ -21,9 +21,7 @@ def read_colors(colors_path):
     return colors_hex
 
 
-def create_card():
-    target_colors = read_colors('colors.txt')
-
+def create_card(target_colors, path2save="test_card.png"):
     master = Tk()
     canvas = Canvas(master, width=WIDTH, height=HEIGHT)
     canvas.pack()
@@ -35,10 +33,10 @@ def create_card():
         canvas.create_polygon(poly, fill=target_colors[i])
         draw.polygon(poly, target_colors[i])
 
-    filename = "test_card.png"
-    image.save(filename)
+    image.save(path2save)
 
-    master.mainloop()
+    #master.mainloop()
 
-
-create_card()
+if __name__ == '__main__':
+    target_colors = read_colors('../colors.txt')
+    create_card(target_colors)
